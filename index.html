@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>After School Lab</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/vue@2.7.8/dist/vue.js"></script>
+    <script type="text/javascript" src="lessons.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <style>
+        .navbar-nav .nav-item .nav-link {
+            color: white;
+        }
+
+        .navbar-nav .nav-item.active .nav-link,
+        .navbar-nav .nav-item:hover .nav-link {
+            color: red;
+        }
+
+        .glyphicon-shopping-cart {
+            color: white;
+        }
+    </style>
+
+
+</head>
+
+<body>
+
+    <div id="app1">
+
+        <nav class="navbar navbar-expand-sm bg-dark justify-content-center">
+
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">About Us</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Contact Us</a>
+                </li>
+            </ul>
+
+            <form class="form-inline" action="">
+                <input class="form-control mr-sm-2" type="text" placeholder="Search" v-model="searchQuery">
+                <button class="btn btn-success" type="submit">Search</button>
+            </form>
+
+            <div class="nav navbar-nav navbar-right cart">
+                <button type="button" class="btn btn-primary btn-lg" v-on:click="showCheckout" v-if="cartCount > 0">
+                    <i class="fas fa-shopping-cart"></i> {{ cartCount }} Checkout
+                </button>
+            </div>
+
+
+        </nav>
+
+
+        <div class="jumbotron text-center">
+            <h1>After School Lab</h1>
+            <p>Resize this responsive page to see the effect!</p>
+        </div>
+
+
+        <div class="container">
+            <div v-if="showProduct">
+
+                <table class="table text-center">
+                    <thead>
+                        <tr>
+                            <th>
+                                <button class="btn btn-link" @click="sortLessonsByTitle">Ascending /
+                                    Descending</button>
+                            </th>
+                            <th>
+                                <button class="btn btn-link" @click="sortLessons">Price</button>
+                            </th>
+                            <th>
+                                <button class="btn btn-link" @click="sortLessonsByLoc">Location</button>
+                            </th>
+                            <th>
+                                <button class="btn btn-link" @click="sortLessonsBySpace">Space</button>
+                            </th>
+                        </tr>
+                    </thead>
+                </table>
+
+                <div class="row">
+
+                    <div class="col-sm-3">
+                        <main class="text-center">
+                            <figure>
+                                <img v-bind:src="lessons[0].image" class="img-fluid" style="height: 200px">
+                            </figure>
+                            <h2 v-text="lessons[0].title"></h2>
+                            <p v-text="lessons[0].description"></p>
+                            <p v-text="lessons[0].location"></p>
+                            <p>Price: {{lessons[0].price | formatPrice}}</p>
+                            <button type="button" class="btn btn-success" v-on:click="addToCart(lessons[0])"
+                                v-if="canAddToCart(lessons[0])">Add
+                                To
+                                Cart</button>
+                            <button disabled="true" class="btn btn-primary" v-else>Add To Cart</button>
+                            <span class="inventory-message" v-if="lessons[0].availableInventory === 0">
+                                All Out
+                            </span>
+                            <span class="inventory-message" v-else-if="lessons[0].availableInventory > 5">
+                                Buy Now
+                            </span>
+                            <span class="inventory-message" v-else>
+                                Only {{lessons[0].availableInventory}} Left!
+                            </span>
+                        </main>
+                    </div>
+                    <div class="col-sm-3">
+                        <main class="text-center">
+                            <figure>
+                                <img v-bind:src="lessons[1].image" class="img-fluid" style="height: 200px">
+                            </figure>
+                            <h2 v-text="lessons[1].title"></h2>
+                            <p v-text="lessons[1].description"></p>
+                            <p v-text="lessons[1].location"></p>
+                            <p>Price: {{lessons[1].price | formatPrice}}</p>
+                            <button type="button" class="btn btn-success" v-on:click="addToCart(lessons[1])"
+                                v-if="canAddToCart(lessons[1])">Add To Cart</button>
+                            <button disabled="true" class="btn btn-primary" v-else>Add To Cart</button>
+                            <span class="inventory-message" v-if="lessons[1].availableInventory === 0">
+                                All Out
+                            </span>
+                            <span class="inventory-message" v-else-if="lessons[1].availableInventory > 5">
+                                Buy Now!!
+                            </span>
+                            <span class="inventory-message" v-else>
+                                Only {{lessons[1].availableInventory}} Left!
+                            </span>
+                        </main>
+                    </div>
+                    <div class="col-sm-3">
+                        <main class="text-center">
+                            <figure>
+                                <img v-bind:src="lessons[2].image" class="img-fluid" style="height: 200px">
+                            </figure>
+                            <h2 v-text="lessons[2].title"></h2>
+                            <p v-text="lessons[2].description"></p>
+                            <p v-text="lessons[2].location"></p>
+                            <p>Price: {{lessons[2].price | formatPrice}}</p>
+                            <button type="button" class="btn btn-success" v-on:click="addToCart(lessons[2])"
+                                v-if="canAddToCart(lessons[2])">Add
+                                To
+                                Cart</button>
+                            <button disabled="true" class="btn btn-primary" v-else>Add To Cart</button>
+                            <span class="inventory-message" v-if="lessons[2].availableInventory === 0">
+                                All Out
+                            </span>
+                            <span class="inventory-message" v-else-if="lessons[2].availableInventory > 5">
+                                Buy Now!!
+                            </span>
+                            <span class="inventory-message" v-else>
+                                Only {{lessons[2].availableInventory}} Left!
+                            </span>
+                        </main>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <main class="text-center">
+                            <figure>
+                                <img v-bind:src="lessons[3].image" class="img-fluid" style="height: 200px">
+                            </figure>
+                            <h2 v-text="lessons[3].title"></h2>
+                            <p v-text="lessons[3].description"></p>
+                            <p v-text="lessons[3].location"></p>
+                            <p>Price: {{lessons[3].price | formatPrice}}</p>
+                            <button type="button" class="btn btn-success" v-on:click="addToCart(lessons[3])"
+                                v-if="canAddToCart(lessons[3])">Add
+                                To
+                                Cart</button>
+                            <button disabled="true" class="btn btn-primary" v-else>Add To Cart</button>
+                            <span class="inventory-message" v-if="lessons[3].availableInventory === 0">
+                                All Out
+                            </span>
+                            <span class="inventory-message" v-else-if="lessons[3].availableInventory > 5">
+                                Buy Now!!
+                            </span>
+                            <span class="inventory-message" v-else>
+                                Only {{lessons[3].availableInventory}} Left!
+                            </span>
+                        </main>
+                    </div>
+                </div>
+
+                <!-- 1st Row Ends Here -->
+
+                <!-- 2nd row Starts Here -->
+
+                <div class="row" style="padding-top: 50px;">
+
+
+                    <div class="col-sm-3">
+                        <main class="text-center">
+                            <figure>
+                                <img v-bind:src="lessons[4].image" class="img-fluid" style="height: 200px">
+                            </figure>
+                            <h2 v-text="lessons[4].title"></h2>
+                            <p v-text="lessons[4].description"></p>
+                            <p v-text="lessons[4].location"></p>
+                            <p>Price: {{lessons[4].price | formatPrice}}</p>
+                            <button type="button" class="btn btn-success" v-on:click="addToCart(lessons[4])"
+                                v-if="canAddToCart(lessons[4])">Add
+                                To
+                                Cart</button>
+                            <button disabled="true" class="btn btn-primary" v-else>Add To Cart</button>
+                            <span class="inventory-message" v-if="lessons[4].availableInventory === 0">
+                                All Out
+                            </span>
+                            <span class="inventory-message" v-else-if="lessons[4].availableInventory > 5">
+                                Buy Now!!
+                            </span>
+                            <span class="inventory-message" v-else>
+                                Only {{lessons[4].availableInventory}} Left!
+                            </span>
+                        </main>
+                    </div>
+                    <div class="col-sm-3">
+                        <main class="text-center">
+                            <figure>
+                                <img v-bind:src="lessons[5].image" class="img-fluid" style="height: 200px">
+                            </figure>
+                            <h2 v-text="lessons[5].title"></h2>
+                            <p v-text="lessons[5].description"></p>
+                            <p v-text="lessons[5].location"></p>
+                            <p>Price: {{lessons[5].price | formatPrice}}</p>
+                            <button type="button" class="btn btn-success" v-on:click="addToCart(lessons[5])"
+                                v-if="canAddToCart(lessons[5])">Add
+                                To
+                                Cart</button>
+                            <button disabled="true" class="btn btn-primary" v-else>Add To Cart</button>
+                            <span class="inventory-message" v-if="lessons[5].availableInventory === 0">
+                                All Out
+                            </span>
+                            <span class="inventory-message" v-else-if="lessons[5].availableInventory > 5">
+                                Buy Now!!
+                            </span>
+                            <span class="inventory-message" v-else>
+                                Only {{lessons[5].availableInventory}} Left!
+                            </span>
+                        </main>
+                    </div>
+                    <div class="col-sm-3">
+                        <main class="text-center">
+                            <figure>
+                                <img v-bind:src="lessons[6].image" class="img-fluid" style="height: 200px">
+                            </figure>
+                            <h2 v-text="lessons[6].title"></h2>
+                            <p v-text="lessons[6].description"></p>
+                            <p v-text="lessons[6].location"></p>
+                            <p>Price: {{lessons[6].price | formatPrice}}</p>
+                            <button type="button" class="btn btn-success" v-on:click="addToCart(lessons[6])"
+                                v-if="canAddToCart(lessons[6])">Add
+                                To
+                                Cart</button>
+                            <button disabled="true" class="btn btn-primary" v-else>Add To Cart</button>
+                            <span class="inventory-message" v-if="lessons[6].availableInventory === 0">
+                                All Out
+                            </span>
+                            <span class="inventory-message" v-else-if="lessons[6].availableInventory > 5">
+                                Buy Now!!
+                            </span>
+                            <span class="inventory-message" v-else>
+                                Only {{lessons[6].availableInventory}} Left!
+                            </span>
+                        </main>
+                    </div>
+
+
+                    <div class="col-sm-3">
+                        <main class="text-center">
+                            <figure>
+                                <img v-bind:src="lessons[7].image" class="img-fluid" style="height: 200px">
+                            </figure>
+                            <h2 v-text="lessons[7].title"></h2>
+                            <p v-text="lessons[7].description"></p>
+                            <p v-text="lessons[7].location"></p>
+                            <p>Price: {{lessons[7].price | formatPrice}}</p>
+                            <button type="button" class="btn btn-success" v-on:click="addToCart(lessons[7])"
+                                v-if="canAddToCart(lessons[7])">Add
+                                To
+                                Cart</button>
+                            <button disabled="true" class="btn btn-primary" v-else>Add To Cart</button>
+                            <span class="inventory-message" v-if="lessons[7].availableInventory === 0">
+                                All Out
+                            </span>
+                            <span class="inventory-message" v-else-if="lessons[7].availableInventory > 5">
+                                Buy Now!!
+                            </span>
+                            <span class="inventory-message" v-else>
+                                Only {{lessons[7].availableInventory}} Left!
+                            </span>
+                        </main>
+                    </div>
+
+                </div>
+                <!-- 2nd Row Ends Here -->
+
+                <!-- 3rd row Starts Here -->
+
+                <div class="row" style="padding-top: 50px; padding-bottom: 50px;">
+
+
+                    <div class="col-sm-6">
+                        <main class="text-center">
+                            <figure>
+                                <img v-bind:src="lessons[8].image" class="img-fluid" style="height: 200px">
+                            </figure>
+                            <h2 v-text="lessons[8].title"></h2>
+                            <p v-text="lessons[8].description"></p>
+                            <p v-text="lessons[8].location"></p>
+                            <p>Price: {{lessons[8].price | formatPrice}}</p>
+                            <button type="button" class="btn btn-success" v-on:click="addToCart(lessons[8])"
+                                v-if="canAddToCart(lessons[8])">Add
+                                To
+                                Cart</button>
+                            <button disabled="true" class="btn btn-primary" v-else>Add To Cart</button>
+                            <span class="inventory-message" v-if="lessons[8].availableInventory === 0">
+                                All Out
+                            </span>
+                            <span class="inventory-message" v-else-if="lessons[8].availableInventory > 5">
+                                Buy Now!!
+                            </span>
+                            <span class="inventory-message" v-else>
+                                Only {{lessons[8].availableInventory}} Left!
+                            </span>
+                        </main>
+                    </div>
+
+
+                    <div class="col-sm-6">
+                        <main class="text-center">
+                            <figure>
+                                <img v-bind:src="lessons[9].image" class="img-fluid" style="height: 200px">
+                            </figure>
+                            <h2 v-text="lessons[9].title"></h2>
+                            <p v-text="lessons[9].description"></p>
+                            <p v-text="lessons[9].location"></p>
+                            <p>Price: {{lessons[9].price | formatPrice}}</p>
+                            <button type="button" class="btn btn-success" v-on:click="addToCart(lessons[9])"
+                                v-if="canAddToCart(lessons[9])">Add
+                                To
+                                Cart</button>
+                            <button disabled="true" class="btn btn-primary" v-else>Add To Cart</button>
+                            <span class="inventory-message" v-if="lessons[9].availableInventory === 0">
+                                All Out
+                            </span>
+                            <span class="inventory-message" v-else-if="lessons[9].availableInventory > 5">
+                                Buy Now!!
+                            </span>
+                            <span class="inventory-message" v-else>
+                                Only {{lessons[9].availableInventory}} Left!
+                            </span>
+                        </main>
+                    </div>
+
+                </div>
+
+                <!-- 3rd Row Ends Here -->
+
+                <div id="app2">
+                </div>
+
+            </div>
+            <div v-else>
+                <h1 class="text-center">Checkout</h2>
+
+                    <div v-if="isCartEmptyComputed">
+                        <h2 class="text-center">Your cart is empty.</h2>
+                    </div>
+                    <div class="row text-center d-flex justify-content-center">
+                        <div class="card d-flex justify-content-center" v-for="item in cart" :key="item.id">
+                            <div class="card-header">
+                                Featured
+                            </div>
+                            <img v-bind:src="item.image" class="img-fluid" style="height: 200px">
+                            <div class="card-body">
+                                <h5 class="card-title">Lesson: {{ item.title }}</h5>
+                                <p class="card-text">Price: {{ item.price }}</p>
+                                <p class="card-text">Location: {{ item.location }}</p>
+                                <p class="card-text">Quantity: {{ item.quantity }}</p>
+                                <button type="button" class="btn btn-primary" @click="addToCart(item)">Add</button>
+                                <button type="button" class="btn btn-danger"
+                                    @click="removeFromCart(item)">Remove</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form>
+                        <div class="form-row">
+                            <div class="form-group col-md-6" :class="{ 'has-error': formErrors.firstName }">
+                                <label for="firstName">First Name:</label>
+                                <input v-model="order.firstName" class="form-control" id="firstName" required>
+                                <span class="text-danger" v-if="formErrors.firstName">{{ formErrors.firstName
+                                    }}</span>
+                            </div>
+
+
+                            <div class="form-group col-md-6" :class="{ 'has-error': formErrors.lastName }">
+                                <label for="lastName">Last Name:</label>
+                                <input v-model="order.lastName" class="form-control" id="lastName" required>
+                                <span class="text-danger" v-if="formErrors.lastName">{{ formErrors.lastName
+                                    }}</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group" :class="{ 'has-error': formErrors.address }">
+                            <label for="address">Address:</label>
+                            <input v-model="order.address" class="form-control" id="address" required>
+                            <span class="text-danger" v-if="formErrors.address">{{ formErrors.address }}</span>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6" :class="{ 'has-error': formErrors.city }">
+                                <label for="city">City:</label>
+                                <input v-model="order.city" class="form-control" id="city" required>
+                                <span class="text-danger" v-if="formErrors.city">{{ formErrors.city }}</span>
+                            </div>
+
+                            <div class="form-group col-md-6" :class="{ 'has-error': formErrors.state }">
+                                <label for="state">State:</label>
+                                <select v-model="order.state" class="form-control" id="state" required>
+                                    <option disabled value="">Select State</option>
+                                    <option>Alabama</option>
+                                    <option>Arizona</option>
+                                    <option>California</option>
+                                    <option>Nevada</option>
+                                </select>
+                                <span class="text-danger" v-if="formErrors.state">{{ formErrors.state }}</span>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6" :class="{ 'has-error': formErrors.zip }">
+                                <label for="zip">ZIP / Postal Code:</label>
+                                <input v-model="order.zip" class="form-control" id="zip" required>
+                                <span class="text-danger" v-if="formErrors.zip">{{ formErrors.zip }}</span>
+                            </div>
+
+
+
+                            <div class="form-group col-md-6" :class="{ 'has-error': formErrors.number }">
+                                <label for="number">Contact Number:</label>
+                                <input v-model="order.number" class="form-control" id="number" required>
+                                <span class="text-danger" v-if="formErrors.number">{{ formErrors.number }}</span>
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-6 boxes">
+                                <input type="checkbox" id="gift" value="true" v-model="order.gift">
+                                <label for="gift">Ship As Gift?</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-6 boxes">
+                                <input type="radio" id="home" value="Home" v-model="order.method">
+                                <label for="home">Home</label>
+                                <input type="radio" id="business" value="Business" v-model="order.method">
+                                <label for="business">Business</label>
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn btn-primary" v-on:click="placeOrder">Place Order</button>
+                    </form>
+
+                    <div class="order-summary">
+                        <h3>Order Summary</h3>
+                        <p>First Name: {{ order.firstName }}</p>
+                        <p>Last Name: {{ order.lastName }}</p>
+                        <p>Address: {{ order.address }}</p>
+                        <p>City: {{ order.city }}</p>
+                        <p>State: {{ order.state }}</p>
+                        <p>ZIP: {{ order.zip }}</p>
+                        <p>Contact Number: {{ order.number }}</p>
+                    </div>
+            </div>
+
+        </div>
+        <!-- Container ends here -->
+
+        <footer class="bg-dark text-white text-center p-3" style="padding-top: 50px;">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p>&copy; 2023 Your Company Name</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p>
+                            <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+    <script type="text/javascript">
+
+        let app1 = new Vue({
+            el: '#app1',
+            data: {
+
+                lessons: lessons,
+                cart: [],
+                showProduct: true,
+
+                order: {
+                    firstName: '',
+                    lastName: '',
+                    address: '',
+                    city: '',
+                    zip: '',
+                    state: '',
+                    number: '',
+                    method: 'Home',
+                    gift: false,
+                },
+
+                states: ['Alabama', 'Arizona', 'California', 'Nevada'],
+                formErrors: {},
+
+                sharedInventory: lessons.slice(),
+                isCartEmpty: true,
+
+
+                cartCount: 0,
+
+                priceSortOrder: 'ascending',
+                titleSortOrder: 'ascending',
+                spaceSortOrder: 'ascending',
+                locSortOrder: 'ascending',
+
+
+                searchQuery: '',
+
+            },
+            methods: {
+                addToCart: function (lesson) {
+                    if (this.canAddToCart(lesson)) {
+                        const existingLesson = this.cart.find((item) => item.title === lesson.title);
+
+                        if (existingLesson) {
+                            existingLesson.quantity++;
+                        } else {
+                            this.cart.push({ ...lesson, quantity: 1 });
+                        }
+
+                        lesson.availableInventory--;
+                        this.cartCount++;
+                    }
+                },
+
+                removeFromCart: function (lesson) {
+                    const existingLessonIndex = this.cart.findIndex((item) => item.title === lesson.title);
+
+                    if (existingLessonIndex !== -1) {
+                        const existingLesson = this.cart[existingLessonIndex];
+
+                        if (existingLesson.quantity > 1) {
+                            existingLesson.quantity--;
+                        } else {
+                            this.cart.splice(existingLessonIndex, 1);
+                        }
+
+                        // Update the available inventory of the shared lesson
+                        const sharedLesson = this.sharedInventory.find((item) => item.title === lesson.title);
+
+                        if (sharedLesson) {
+                            sharedLesson.availableInventory++;
+                        }
+
+                        this.cartCount--; // Update the cart count
+                    }
+                },
+
+                canAddToCart: function (lesson) {
+                    return lesson.availableInventory > 0;
+                },
+                cartCount(id) {
+                    let count = 0;
+                    for (let i = 0; i < this.cart.length; i++) {
+                        if (this.cart[i] === id) {
+                            count++;
+                        }
+                    }
+                    return count;
+                },
+                showCheckout() {
+                    this.showProduct = !this.showProduct;
+                    this.isCartEmptyComputed = this.cart.length === 0; // Update the cart status
+                },
+
+                sortLessons: function () {
+                    if (this.priceSortOrder === 'ascending') {
+                        this.lessons.sort((a, b) => a.price - b.price);
+                        this.priceSortOrder = 'descending';
+                    } else {
+                        this.lessons.sort((a, b) => b.price - a.price);
+                        this.priceSortOrder = 'ascending';
+                    }
+                },
+
+                sortLessonsByTitle: function () {
+                    if (this.titleSortOrder === 'ascending') {
+                        this.lessons.sort((a, b) => a.title.localeCompare(b.title));
+                        this.titleSortOrder = 'descending';
+                    } else {
+                        this.lessons.sort((a, b) => b.title.localeCompare(a.title));
+                        this.titleSortOrder = 'ascending';
+                    }
+                },
+
+                sortLessonsByLoc: function () {
+                    if (this.locSortOrder === 'ascending') {
+                        this.lessons.sort((a, b) => a.location.localeCompare(b.location));
+                        this.locSortOrder = 'descending';
+                    } else {
+                        this.lessons.sort((a, b) => b.location.localeCompare(a.locaion));
+                        this.locSortOrder = 'ascending';
+                    }
+                },
+                sortLessonsBySpace: function () {
+                    if (this.spaceSortOrder === 'ascending') {
+                        // Sort the lessons by availableInventory in ascending order
+                        this.lessons.sort((a, b) => a.availableInventory - b.availableInventory);
+                        this.spaceSortOrder = 'descending';
+                    } else {
+                        // Sort the lessons by availableInventory in descending order
+                        this.lessons.sort((a, b) => b.availableInventory - a.availableInventory);
+                        this.spaceSortOrder = 'ascending';
+                    }
+                },
+
+
+                validateForm: function () {
+                    this.formErrors = {}; // Reset form errors
+
+                    if (this.order.firstName.trim() === '') {
+                        this.formErrors.firstName = 'First Name is required';
+                    }
+                    if (this.order.lastName.trim() === '') {
+                        this.formErrors.lastName = 'Last Name is required';
+                    }
+                    if (this.order.address.trim() === '') {
+                        this.formErrors.address = 'Address is required';
+                    }
+                    if (this.order.city.trim() === '') {
+                        this.formErrors.city = 'City is required';
+                    }
+                    if (this.order.state === '') {
+                        this.formErrors.state = 'State is required';
+                    }
+                    if (this.order.zip.trim() === '') {
+                        this.formErrors.zip = 'ZIP / Postal Code is required';
+                    }
+                    if (!/^\d{11}$/.test(this.order.number)) {
+                        this.formErrors.number = 'Invalid Number';
+                    } else if (!/^\d{11}$/.test(this.order.number)) {
+                        this.formErrors.number = 'Invalid Number';
+                    }
+
+
+
+
+                    return Object.keys(this.formErrors).length === 0; // Return true if there are no errors
+                },
+
+                placeOrder: function () {
+                    if (this.validateForm()) {
+                        // Proceed with placing the order
+                        alert('Order placed!');
+                    }
+                },
+
+            },
+
+            computed: {
+                isCartEmptyComputed: function () {
+                    return this.cart.length === 0;
+                },
+
+            },
+
+
+
+
+            filters: {
+                formatPrice: function (price) {
+                    if (!parseInt(price)) { return ""; }
+                    if (price > 99999) {
+                        var priceString = (price / 100).toFixed(2);
+                        var priceArray = priceString.split("").reverse();
+                        var index = 3;
+                        while (priceArray.length > index + 3) {
+                            priceArray.splice(index + 3, 0, ",");
+                            index += 4;
+                        }
+                        return "$" + priceArray.reverse().join("");
+                    } else {
+                        return "$" + (price / 100).toFixed(2);
+                    }
+                }
+            },
+
+
+        });
+
+        let app2 = new Vue({
+            el: '#app2',
+            data: {
+                sharedInventory: app1.sharedInventory,
+            },
+        });
+
+    </script>
+
+</body>
+
+</html>
