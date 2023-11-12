@@ -238,9 +238,7 @@
                             <p v-text="lessons[5].location"></p>
                             <p>Price: {{lessons[5].price | formatPrice}}</p>
                             <button type="button" class="btn btn-success" v-on:click="addToCart(lessons[5])"
-                                v-if="canAddToCart(lessons[5])">Add
-                                To
-                                Cart</button>
+                                v-if="canAddToCart(lessons[5])">Add To Cart</button>
                             <button disabled="true" class="btn btn-primary" v-else>Add To Cart</button>
                             <span class="inventory-message" v-if="lessons[5].availableInventory === 0">
                                 All Out
