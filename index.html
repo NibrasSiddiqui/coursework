@@ -58,6 +58,9 @@
                 <button type="button" class="btn btn-primary btn-lg" v-on:click="showCheckout" v-if="cartCount > 0">
                     <i class="fas fa-shopping-cart"></i> {{ cartCount }} Checkout
                 </button>
+                <button type="button" class="btn btn-primary btn-lg" v-else>
+                    <i class="fas fa-shopping-cart"></i> {{ cartCount }} Checkout
+                </button>
             </div>
 
 
