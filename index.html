@@ -563,6 +563,8 @@
 
                         lesson.availableInventory--;
                         this.cartCount++;
+
+                        this.isCartEmpty = this.cart.length === 0;
                     }
                 },
 
@@ -586,6 +588,8 @@
                         }
 
                         this.cartCount--; // Update the cart count
+
+                        this.isCartEmpty = this.cart.length === 0;
                     }
                 },
 
@@ -603,7 +607,6 @@
                 },
                 showCheckout() {
                     this.showProduct = !this.showProduct;
-                    this.isCartEmptyComputed = this.cart.length === 0; // Update the cart status
                 },
 
                 sortLessons: function () {
